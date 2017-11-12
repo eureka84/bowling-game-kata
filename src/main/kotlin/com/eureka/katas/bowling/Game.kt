@@ -8,24 +8,33 @@ class Game {
         var total = 0
         pinsDownForRoll.forEachIndexed { index, pinsDown ->
             total += pinsDown
-            if (isThereAStrikePending(index) || isThereASparePending(index)) {
-                total += pinsDown
+            if (isThereAStrikePending(index)){
+                total += pinsDown * numberOfStrikePending (index)
             }
+            if (isThereASparePending(index))
+                total += pinsDown
         }
         return total
     }
 
-    private fun isThereAStrikePending(roll: Int): Boolean {
-        return  (roll > 0 && isStrike(roll - 1))  ||
-                (roll > 1 && isStrike(roll - 2))
+    private fun numberOfStrikePending(roll: Int): Int {
+        return pinsDownForRoll
+                .subList(Math.max(0, roll -2), roll)
+                .filter { isStrike(it) }
+                .count()
     }
 
-    private fun isStrike(index: Int) = pinsDownForRoll[index] == 10
+    private fun isThereAStrikePending(roll: Int): Boolean {
+        return  (roll > 0 && isStrike(pinsDownForRoll[roll - 1]))  ||
+                (roll > 1 && isStrike(pinsDownForRoll[roll - 2]))
+    }
 
-    private fun isThereASparePending(index: Int): Boolean {
-        return index > 1 &&
-                isFrameFirstThrow(index) &&
-                previousFrameIsSpare(index)
+    private fun isStrike(roll: Int) = roll == 10
+
+    private fun isThereASparePending(roll: Int): Boolean {
+        return roll > 1 &&
+                isFrameFirstThrow(roll) &&
+                previousFrameIsSpare(roll)
     }
 
     private fun previousFrameIsSpare(index: Int) = pinsDownForRoll[index - 1] + pinsDownForRoll[index - 2] == 10
