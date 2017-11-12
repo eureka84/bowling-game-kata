@@ -5,26 +5,26 @@ class Game {
     var listOfPinsDown = mutableListOf<Int>()
 
     fun score(): Int {
-        return (0 until listOfPinsDown.size).map {currentRoll ->
+        return (0 until listOfPinsDown.size).map { currentRoll ->
             defaultScore(currentRoll) +
-                extraPointsForStrike(currentRoll) +
+                    extraPointsForStrike(currentRoll) +
                     extraPointsForSpare(currentRoll)
         }.sum()
     }
 
     private fun extraPointsForSpare(currentRoll: Int) =
-        if (isThereASparePending(currentRoll))
-            listOfPinsDown[currentRoll]
-        else 0
+            if (isThereASparePending(currentRoll))
+                listOfPinsDown[currentRoll]
+            else 0
 
 
     private fun extraPointsForStrike(currentRoll: Int) =
-        listOfPinsDown[currentRoll] * numberOfStrikePending(currentRoll)
+            listOfPinsDown[currentRoll] * numberOfStrikePending(currentRoll)
 
     private fun defaultScore(roll: Int) = listOfPinsDown[roll]
 
     private fun numberOfStrikePending(roll: Int): Int {
-        return (Math.max(0, roll - 2) until  roll)
+        return (Math.max(0, roll - 2) until roll)
                 .filter(this::isStrike)
                 .count()
     }
@@ -32,11 +32,17 @@ class Game {
     private fun isStrike(roll: Int) = listOfPinsDown[roll] == 10
 
     private fun isThereASparePending(roll: Int) =
-        roll > 1 && isFrameFirstThrow(roll) && previousFrameIsSpare(roll)
+            isFrameFirstThrow(roll) && previousFrameIsSpare(roll) && isNotABonusThrow(roll)
+
+    private fun isNotABonusThrow(roll: Int): Boolean {
+        return roll <= 20
+    }
 
 
     private fun previousFrameIsSpare(roll: Int) =
-            listOfPinsDown[roll - 1] + listOfPinsDown[roll - 2] == 10
+            pinsDownFor(roll - 1) + pinsDownFor(roll - 2) == 10
+
+    private fun pinsDownFor(roll: Int) = if (roll > 0 ) listOfPinsDown[roll] else 0
 
     private fun isFrameFirstThrow(roll: Int) = roll % 2 == 0
 
