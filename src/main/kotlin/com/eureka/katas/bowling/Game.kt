@@ -2,13 +2,13 @@ package com.eureka.katas.bowling
 
 class Game {
 
-    var total: Int = 0
+    var rolls = mutableListOf<Int>()
 
     fun score(): Int {
-        return total
+        return rolls.sum()
     }
 
     fun roll(pinsDown: Int) {
-        total += pinsDown
+        rolls.add(pinsDown)
     }
 }

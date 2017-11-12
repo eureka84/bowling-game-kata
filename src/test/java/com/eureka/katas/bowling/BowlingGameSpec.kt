@@ -26,6 +26,20 @@ class BowlingGameSpec: StringSpec() {
             game.roll(4)
             game.score() shouldBe 7
         }
+
+
+//        "should be able to tell the score after one spare" {
+//            val game = Game()
+//            rollOneSpare(game)
+//            game.roll(3)
+//            game.score() shouldBe 16
+//        }
+
+    }
+
+    private fun rollOneSpare(game: Game) {
+        game.roll(3)
+        game.roll(7)
     }
 }
 
