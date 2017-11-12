@@ -34,11 +34,29 @@ class BowlingGameSpec: StringSpec() {
             game.score() shouldBe 16
         }
 
+        "should be able to tell the score after two spares" {
+            val game = Game()
+            rollOneSpare(game)
+            game.roll(3)
+            game.roll(4)
+            rollOneSpare(game)
+            game.roll(4)
+            game.score() shouldBe 38
+        }
+
+        "should be able to tell the score after two consecutive spares" {
+            val game = Game()
+            rollOneSpare(game)
+            rollOneSpare(game)
+            game.roll(3)
+            game.score() shouldBe 30
+        }
+
     }
 
     private fun rollOneSpare(game: Game) {
-        game.roll(3)
-        game.roll(7)
+        game.roll(4)
+        game.roll(6)
     }
 }
 
