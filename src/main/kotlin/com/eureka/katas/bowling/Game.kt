@@ -2,49 +2,45 @@ package com.eureka.katas.bowling
 
 class Game {
 
-    var pinsDownForRoll = mutableListOf<Int>()
+    var listOfPinsDown = mutableListOf<Int>()
 
     fun score(): Int {
-        var total = 0
-        pinsDownForRoll.forEachIndexed { currentRoll, pinsDown ->
-            total += pinsDown
-            if (isThereAStrikePendingBefore(currentRoll)){
-                total += pinsDown * numberOfStrikePendingBefore(currentRoll)
-            }
-            if (isThereASparePendingBefore(currentRoll))
-                total += pinsDown
-        }
-        return total
+        return (0 until listOfPinsDown.size).map {currentRoll ->
+            defaultScore(currentRoll) +
+                extraPointsForStrike(currentRoll) +
+                    extraPointsForSpare(currentRoll)
+        }.sum()
     }
 
-    private fun numberOfStrikePendingBefore(roll: Int): Int {
-        val previousTwoRolls = pinsDownForRoll.subList(Math.max(0, roll - 2), roll)
-        return previousTwoRolls
-                .filter { isStrike(it) }
+    private fun extraPointsForSpare(currentRoll: Int) =
+        if (isThereASparePending(currentRoll))
+            listOfPinsDown[currentRoll]
+        else 0
+
+
+    private fun extraPointsForStrike(currentRoll: Int) =
+        listOfPinsDown[currentRoll] * numberOfStrikePending(currentRoll)
+
+    private fun defaultScore(roll: Int) = listOfPinsDown[roll]
+
+    private fun numberOfStrikePending(roll: Int): Int {
+        return (Math.max(0, roll - 2) until  roll)
+                .filter(this::isStrike)
                 .count()
     }
 
-    private fun isThereAStrikePendingBefore(roll: Int): Boolean {
-        val previousRollPinsDown = if (roll > 0) pinsDownForRoll[roll - 1] else 0
-        val secondToLastPinsDown = if (roll > 1) pinsDownForRoll[roll - 2] else 0
+    private fun isStrike(roll: Int) = listOfPinsDown[roll] == 10
 
-        return  isStrike(previousRollPinsDown)  ||
-                isStrike(secondToLastPinsDown)
-    }
+    private fun isThereASparePending(roll: Int) =
+        roll > 1 && isFrameFirstThrow(roll) && previousFrameIsSpare(roll)
 
-    private fun isStrike(roll: Int) = roll == 10
 
-    private fun isThereASparePendingBefore(roll: Int): Boolean {
-        return roll > 1 &&
-                isFrameFirstThrow(roll) &&
-                previousFrameIsSpare(roll)
-    }
+    private fun previousFrameIsSpare(roll: Int) =
+            listOfPinsDown[roll - 1] + listOfPinsDown[roll - 2] == 10
 
-    private fun previousFrameIsSpare(index: Int) = pinsDownForRoll[index - 1] + pinsDownForRoll[index - 2] == 10
-
-    private fun isFrameFirstThrow(index: Int) = index % 2 == 0
+    private fun isFrameFirstThrow(roll: Int) = roll % 2 == 0
 
     fun roll(pinsDown: Int) {
-        pinsDownForRoll.add(pinsDown)
+        listOfPinsDown.add(pinsDown)
     }
 }
