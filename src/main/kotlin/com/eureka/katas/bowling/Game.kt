@@ -2,29 +2,37 @@ package com.eureka.katas.bowling
 
 class Game {
 
-    var rolls = mutableListOf<Int>()
+    var pinsDownForRoll = mutableListOf<Int>()
 
     fun score(): Int {
         var total = 0
-        rolls.forEachIndexed { index, pinsDown ->
+        pinsDownForRoll.forEachIndexed { index, pinsDown ->
             total += pinsDown
-            if (isNotFirstFrame(index) &&
-                isFirstThrowOfNextFrame(index) &&
-                previousFrameIsSpare(index)
-            ) {
+            if (isThereAStrikePending(index) || isThereASparePending(index)) {
                 total += pinsDown
             }
         }
         return total
     }
 
-    private fun previousFrameIsSpare(index: Int) = rolls[index - 1] + rolls[index - 2] == 10
+    private fun isThereAStrikePending(roll: Int): Boolean {
+        return  (roll > 0 && isStrike(roll - 1))  ||
+                (roll > 1 && isStrike(roll - 2))
+    }
 
-    private fun isFirstThrowOfNextFrame(index: Int) = index % 2 == 0
+    private fun isStrike(index: Int) = pinsDownForRoll[index] == 10
 
-    private fun isNotFirstFrame(index: Int) = index > 1
+    private fun isThereASparePending(index: Int): Boolean {
+        return index > 1 &&
+                isFrameFirstThrow(index) &&
+                previousFrameIsSpare(index)
+    }
+
+    private fun previousFrameIsSpare(index: Int) = pinsDownForRoll[index - 1] + pinsDownForRoll[index - 2] == 10
+
+    private fun isFrameFirstThrow(index: Int) = index % 2 == 0
 
     fun roll(pinsDown: Int) {
-        rolls.add(pinsDown)
+        pinsDownForRoll.add(pinsDown)
     }
 }
