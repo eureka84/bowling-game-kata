@@ -6,32 +6,35 @@ class Game {
 
     fun score(): Int {
         var total = 0
-        pinsDownForRoll.forEachIndexed { index, pinsDown ->
+        pinsDownForRoll.forEachIndexed { currentRoll, pinsDown ->
             total += pinsDown
-            if (isThereAStrikePending(index)){
-                total += pinsDown * numberOfStrikePending (index)
+            if (isThereAStrikePendingBefore(currentRoll)){
+                total += pinsDown * numberOfStrikePendingBefore(currentRoll)
             }
-            if (isThereASparePending(index))
+            if (isThereASparePendingBefore(currentRoll))
                 total += pinsDown
         }
         return total
     }
 
-    private fun numberOfStrikePending(roll: Int): Int {
-        return pinsDownForRoll
-                .subList(Math.max(0, roll -2), roll)
+    private fun numberOfStrikePendingBefore(roll: Int): Int {
+        val previousTwoRolls = pinsDownForRoll.subList(Math.max(0, roll - 2), roll)
+        return previousTwoRolls
                 .filter { isStrike(it) }
                 .count()
     }
 
-    private fun isThereAStrikePending(roll: Int): Boolean {
-        return  (roll > 0 && isStrike(pinsDownForRoll[roll - 1]))  ||
-                (roll > 1 && isStrike(pinsDownForRoll[roll - 2]))
+    private fun isThereAStrikePendingBefore(roll: Int): Boolean {
+        val previousRollPinsDown = if (roll > 0) pinsDownForRoll[roll - 1] else 0
+        val secondToLastPinsDown = if (roll > 1) pinsDownForRoll[roll - 2] else 0
+
+        return  isStrike(previousRollPinsDown)  ||
+                isStrike(secondToLastPinsDown)
     }
 
     private fun isStrike(roll: Int) = roll == 10
 
-    private fun isThereASparePending(roll: Int): Boolean {
+    private fun isThereASparePendingBefore(roll: Int): Boolean {
         return roll > 1 &&
                 isFrameFirstThrow(roll) &&
                 previousFrameIsSpare(roll)
