@@ -25,4 +25,13 @@ class AcceptanceTest {
 
         assertEquals(150 , game.score())
     }
+
+    @Test
+    fun perfectGame() {
+        val game = Game()
+
+        (1..12).forEach { game.roll(10) }
+
+        assertEquals(300 , game.score())
+    }
 }
