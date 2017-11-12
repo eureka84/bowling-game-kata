@@ -8,15 +8,23 @@ import io.kotlintest.specs.StringSpec
  */
 class BowlingGameSpec: StringSpec() {
     init {
+
         "should be able to tell the score after no roll" {
             val game = Game()
             game.score() shouldBe 0
         }
+
         "should be able to tell the score after one roll" {
             val game = Game()
-            val pinsDown = 4
-            game.roll(pinsDown)
-            game.score() shouldBe pinsDown
+            game.roll(4)
+            game.score() shouldBe 4
+        }
+
+        "should be able to tell the score after two rolls with less than 10 pins down" {
+            val game = Game()
+            game.roll(3)
+            game.roll(4)
+            game.score() shouldBe 7
         }
     }
 }
