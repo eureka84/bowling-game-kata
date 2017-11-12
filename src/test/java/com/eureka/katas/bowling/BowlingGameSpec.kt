@@ -12,6 +12,12 @@ class BowlingGameSpec: StringSpec() {
             val game = Game()
             game.score() shouldBe 0
         }
+        "should be able to tell the score after one roll" {
+            val game = Game()
+            val pinsDown = 4
+            game.roll(pinsDown)
+            game.score() shouldBe pinsDown
+        }
     }
 }
 

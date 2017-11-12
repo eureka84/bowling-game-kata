@@ -1,7 +1,14 @@
 package com.eureka.katas.bowling
 
 class Game {
+
+    var total: Int = 0
+
     fun score(): Int {
-        return 0
+        return total
+    }
+
+    fun roll(pinsDown: Int) {
+        total += pinsDown
     }
 }
