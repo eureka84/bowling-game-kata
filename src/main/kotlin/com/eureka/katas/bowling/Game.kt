@@ -34,27 +34,25 @@ class Game {
 
     private fun extraForSpare(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
-            pointsForSpare(currentRoll)
+            if (isThereASparePending(currentRoll))
+                listOfPinsDown[indexOf(currentRoll)]
+            else 0
         }
     }
 
     private fun extraForStrike(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
-            pointsForStrike(currentRoll)
+            listOfPinsDown[indexOf(currentRoll)] * numberOfStrikesPending(currentRoll)
         }
     }
 
     private fun basePoints(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
-            defaultScore(currentRoll)
+            if (isNotBonusThrow(currentRoll))
+                listOfPinsDown[indexOf(currentRoll)]
+            else 0
         }
     }
-
-    private fun defaultScore(roll: Int) =
-            if (isNotBonusThrow(roll)) listOfPinsDown[indexOf(roll)] else 0
-
-    private fun pointsForStrike(roll: Int) =
-            listOfPinsDown[indexOf(roll)] * numberOfStrikesPending(roll)
 
     private fun numberOfStrikesPending(roll: Int) =
             (Math.max(1, roll - 2) until roll)
@@ -65,11 +63,6 @@ class Game {
             isNotBonusThrow(roll) && listOfPinsDown[indexOf(roll)] == 10
 
     private fun isNotBonusThrow(roll: Int) = frames[roll]!! <= 10
-
-    private fun pointsForSpare(roll: Int) =
-            if (isThereASparePending(roll))
-                listOfPinsDown[indexOf(roll)]
-            else 0
 
     private fun isThereASparePending(roll: Int) =
             isFramesFirstThrow(roll) && previousFrameIsSpare(roll) && frames[roll]!! <= 11

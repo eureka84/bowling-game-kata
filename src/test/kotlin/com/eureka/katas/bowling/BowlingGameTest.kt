@@ -6,7 +6,7 @@ import io.kotlintest.specs.StringSpec
 /*
  * @author asciarra
  */
-class BowlingGameSpec: StringSpec() {
+class BowlingGameTest : StringSpec() {
     init {
 
         "should be able to tell the score after no roll" {
