@@ -3,40 +3,60 @@ package com.eureka.katas.bowling
 class Game {
 
     private var listOfPinsDown = mutableListOf<Int>()
-    private val frames: Map<Int, Int> get() {
-        var total = 0
-        var throws = 0
-        var frame = 1
-        val currentFrames = mutableMapOf<Int, Int>()
-        listOfPinsDown.forEachIndexed { index, pins ->
-            total += pins
-            throws++
-            currentFrames.put(index+1, frame)
-            if (total == 10 || throws == 2) {
-                frame++
-                throws = 0
-                total = 0
+    private val frames: Map<Int, Int>
+        get() {
+            var total = 0
+            var throws = 0
+            var frame = 1
+            val currentFrames = mutableMapOf<Int, Int>()
+            listOfPinsDown.forEachIndexed { index, pins ->
+                total += pins
+                throws++
+                currentFrames.put(index + 1, frame)
+                if (total == 10 || throws == 2) {
+                    frame++
+                    throws = 0
+                    total = 0
+                }
             }
+            return currentFrames
         }
-        return currentFrames
-    }
 
 
     fun score(): Int {
+        val sum: (Int, Int) -> Int = { left, right -> left + right }
+        return basePoints()
+                .zip(extraForStrike(), sum)
+                .zip(extraForSpare(), sum)
+                .sum()
+
+    }
+
+    private fun extraForSpare(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
-            defaultScore(currentRoll) +
-                    extraPointsForStrike(currentRoll) +
-                    extraPointsForSpare(currentRoll)
-        }.sum()
+            pointsForSpare(currentRoll)
+        }
+    }
+
+    private fun extraForStrike(): List<Int> {
+        return (1..listOfPinsDown.size).map { currentRoll ->
+            pointsForStrike(currentRoll)
+        }
+    }
+
+    private fun basePoints(): List<Int> {
+        return (1..listOfPinsDown.size).map { currentRoll ->
+            defaultScore(currentRoll)
+        }
     }
 
     private fun defaultScore(roll: Int) =
-            if (isNotBonusThrow(roll))  listOfPinsDown[indexOf(roll)] else 0
+            if (isNotBonusThrow(roll)) listOfPinsDown[indexOf(roll)] else 0
 
-    private fun extraPointsForStrike(roll: Int) =
-             listOfPinsDown[indexOf(roll)] * numberOfStrikePending(roll)
+    private fun pointsForStrike(roll: Int) =
+            listOfPinsDown[indexOf(roll)] * numberOfStrikesPending(roll)
 
-    private fun numberOfStrikePending(roll: Int) =
+    private fun numberOfStrikesPending(roll: Int) =
             (Math.max(1, roll - 2) until roll)
                     .filter(this::isStrike)
                     .count()
@@ -46,7 +66,7 @@ class Game {
 
     private fun isNotBonusThrow(roll: Int) = frames[roll]!! <= 10
 
-    private fun extraPointsForSpare(roll: Int) =
+    private fun pointsForSpare(roll: Int) =
             if (isThereASparePending(roll))
                 listOfPinsDown[indexOf(roll)]
             else 0
