@@ -55,8 +55,10 @@ class Game {
     private fun isThereASparePending(roll: Int) =
             isFramesFirstThrow(roll) && previousFrameIsSpare(roll) && frames[roll]!! <= 11
 
+    // ISSUE HERE
     private fun isFramesFirstThrow(roll: Int) = roll % 2 == 1
 
+    /// ISSUE HERE
     private fun previousFrameIsSpare(roll: Int) =
             pinsDownFor(roll - 1) + pinsDownFor(roll - 2) == 10
 

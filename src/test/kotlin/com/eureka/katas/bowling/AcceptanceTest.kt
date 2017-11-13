@@ -34,4 +34,20 @@ class AcceptanceTest {
 
         assertEquals(300 , game.score())
     }
+
+    @Test
+    fun mixSparesAndStrikes() {
+        val game = Game()
+
+        (1..10).forEach {
+            game.roll(4)
+            game.roll(6)
+            game.roll(10)
+        }
+
+        game.roll(10)
+        game.roll(10)
+
+        assertEquals(210 , game.score())
+    }
 }
