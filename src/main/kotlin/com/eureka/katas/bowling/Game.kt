@@ -37,19 +37,17 @@ class Game {
     private fun basePoints(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
             if (isNotBonusThrow(currentRoll))
-                listOfPinsDown[indexOf(currentRoll)]
+                listOfPinsDown[currentRoll - 1]
             else 0
         }
     }
 
     private fun isNotBonusThrow(roll: Int) = frames[roll]!! <= 10
 
-    private fun indexOf(roll: Int) = roll - 1
-
     private fun pointsExtraForSpare(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
             if (isThereASparePending(currentRoll))
-                listOfPinsDown[indexOf(currentRoll)]
+                listOfPinsDown[currentRoll - 1]
             else 0
         }
     }
@@ -62,17 +60,17 @@ class Game {
     private fun previousFrameIsSpare(roll: Int) =
             pinsDownFor(roll - 1) + pinsDownFor(roll - 2) == 10
 
-    private fun pinsDownFor(roll: Int) = if (roll >= 1) listOfPinsDown[indexOf(roll)] else 0
+    private fun pinsDownFor(roll: Int) = if (roll >= 1) listOfPinsDown[roll - 1] else 0
 
     private fun pointsExtraForStrike(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
-            listOfPinsDown[indexOf(currentRoll)] * numberOfStrikesPending(currentRoll)
+            listOfPinsDown[currentRoll - 1] * numberOfStrikesPending(currentRoll)
         }
     }
 
     private fun numberOfStrikesPending(roll: Int) =
             (Math.max(1, roll - 2) until roll)
-                    .filter{ roll -> isNotBonusThrow(roll) && listOfPinsDown[indexOf(roll)] == 10}
+                    .filter{ isNotBonusThrow(it) && listOfPinsDown[it - 1] == 10}
                     .count()
 
     fun roll(pinsDown: Int) {
