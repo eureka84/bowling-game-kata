@@ -2,7 +2,7 @@ package com.eureka.katas.bowling
 
 class Game {
 
-    private var listOfPinsDown = mutableListOf<Int>()
+    private val listOfPinsDown = mutableListOf<Int>()
     private val frames: Map<Int, Int>
         get() {
             var total = 0
@@ -24,15 +24,17 @@ class Game {
 
 
     fun score(): Int {
-        val sum: (Int, Int) -> Int = { left, right -> left + right }
         return basePoints()
-                .zip(extraForStrike(), sum)
-                .zip(extraForSpare(), sum)
+                .add(pointsExtraForSpare())
+                .add(pointsExtraForStrike())
                 .sum()
-
     }
 
-    private fun extraForSpare(): List<Int> {
+    private fun List<Int>.add(other: List<Int>): List<Int> {
+        return this.zip(other).map { (a, b) -> a + b }
+    }
+
+    private fun pointsExtraForSpare(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
             if (isThereASparePending(currentRoll))
                 listOfPinsDown[indexOf(currentRoll)]
@@ -40,7 +42,7 @@ class Game {
         }
     }
 
-    private fun extraForStrike(): List<Int> {
+    private fun pointsExtraForStrike(): List<Int> {
         return (1..listOfPinsDown.size).map { currentRoll ->
             listOfPinsDown[indexOf(currentRoll)] * numberOfStrikesPending(currentRoll)
         }
