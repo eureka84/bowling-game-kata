@@ -30,8 +30,6 @@ class Game {
                 .sum()
     }
 
-    private fun List<Int>.add(other: List<Int>): List<Int> = this.zip(other).map { (a, b) -> a + b }
-
     private fun basePoints(): List<Int> {
         return (0 until listOfPinsDown.size).map { currentRoll ->
             if (isNotABonusThrow(currentRoll))
@@ -41,6 +39,7 @@ class Game {
         }
     }
 
+    private fun isNotABonusThrow(roll: Int) = frames[roll]!! <= 10
 
     private fun pointsExtraForSpare(): List<Int> {
         return (0 until listOfPinsDown.size).map { currentRoll ->
@@ -49,18 +48,17 @@ class Game {
             else 0
         }
     }
-    private fun isNotABonusThrow(roll: Int) = frames[roll]!! <= 10
 
     private fun isThereASparePending(roll: Int): Boolean =
-            isFramesFirstThrow(roll) && previousFrameIsSpare(roll)
+            isFrameFirstThrow(roll) && previousTwoRollsFormASpare(roll)
 
-    private fun isFramesFirstThrow(roll: Int): Boolean {
+    private fun isFrameFirstThrow(roll: Int): Boolean {
         val currentRollFrame = frames[roll]!!
         val previousRollFrame = if (frames[roll - 1] == null) -1 else frames[roll - 1]!!
         return currentRollFrame > previousRollFrame
     }
 
-    private fun previousFrameIsSpare(roll: Int): Boolean {
+    private fun previousTwoRollsFormASpare(roll: Int): Boolean {
         val previousRoll = roll - 1
         val secondToLastRoll = roll - 2
 
@@ -84,5 +82,7 @@ class Game {
     fun roll(pinsDown: Int) {
         listOfPinsDown.add(pinsDown)
     }
+
+    private fun List<Int>.add(other: List<Int>): List<Int> = this.zip(other).map { (a, b) -> a + b }
 
 }
