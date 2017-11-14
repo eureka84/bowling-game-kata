@@ -12,7 +12,7 @@ class Game {
             listOfPinsDown.forEachIndexed { index, pins ->
                 total += pins
                 throws++
-                currentFrames.put(index + 1, frame)
+                currentFrames.put(index, frame)
                 if (total == 10 || throws == 2) {
                     frame++
                     throws = 0
@@ -30,49 +30,55 @@ class Game {
                 .sum()
     }
 
-    private fun List<Int>.add(other: List<Int>): List<Int> {
-        return this.zip(other).map { (a, b) -> a + b }
-    }
+    private fun List<Int>.add(other: List<Int>): List<Int> = this.zip(other).map { (a, b) -> a + b }
 
     private fun basePoints(): List<Int> {
-        return (1..listOfPinsDown.size).map { currentRoll ->
-            if (isNotBonusThrow(currentRoll))
-                listOfPinsDown[currentRoll - 1]
-            else 0
+        return (0 until listOfPinsDown.size).map { currentRoll ->
+            if (isNotABonusThrow(currentRoll))
+                listOfPinsDown[currentRoll]
+            else
+                0
         }
     }
 
-    private fun isNotBonusThrow(roll: Int) = frames[roll]!! <= 10
 
     private fun pointsExtraForSpare(): List<Int> {
-        return (1..listOfPinsDown.size).map { currentRoll ->
+        return (0 until listOfPinsDown.size).map { currentRoll ->
             if (isThereASparePending(currentRoll))
-                listOfPinsDown[currentRoll - 1]
+                listOfPinsDown[currentRoll]
             else 0
         }
     }
+    private fun isNotABonusThrow(roll: Int) = frames[roll]!! <= 10
 
-    private fun isThereASparePending(roll: Int) =
-            isFramesFirstThrow(roll) && previousFrameIsSpare(roll) && frames[roll]!! <= 11
+    private fun isThereASparePending(roll: Int): Boolean =
+            isFramesFirstThrow(roll) && previousFrameIsSpare(roll)
 
-    // ISSUE HERE
-    private fun isFramesFirstThrow(roll: Int) = roll % 2 == 1
+    private fun isFramesFirstThrow(roll: Int): Boolean {
+        val currentRollFrame = frames[roll]!!
+        val previousRollFrame = if (frames[roll - 1] == null) -1 else frames[roll - 1]!!
+        return currentRollFrame > previousRollFrame
+    }
 
-    /// ISSUE HERE
-    private fun previousFrameIsSpare(roll: Int) =
-            pinsDownFor(roll - 1) + pinsDownFor(roll - 2) == 10
+    private fun previousFrameIsSpare(roll: Int): Boolean {
+        val previousRoll = roll - 1
+        val secondToLastRoll = roll - 2
 
-    private fun pinsDownFor(roll: Int) = if (roll >= 1) listOfPinsDown[roll - 1] else 0
+        return (previousRoll >= 0 && secondToLastRoll >= 0) &&
+            listOfPinsDown[previousRoll]  + listOfPinsDown[secondToLastRoll] == 10
+    }
 
     private fun pointsExtraForStrike(): List<Int> {
-        return (1..listOfPinsDown.size).map { currentRoll ->
-            listOfPinsDown[currentRoll - 1] * numberOfStrikesPending(currentRoll)
+        return (0 until listOfPinsDown.size).map { currentRoll ->
+            listOfPinsDown[currentRoll] * numberOfStrikesPending(currentRoll)
         }
     }
 
     private fun numberOfStrikesPending(roll: Int) =
-            (Math.max(1, roll - 2) until roll)
-                    .filter{ isNotBonusThrow(it) && listOfPinsDown[it - 1] == 10}
+            (Math.max(0, roll - 2) until roll)
+                    .filter{
+                        isNotABonusThrow(it) && listOfPinsDown[it] == 10
+                    }
                     .count()
 
     fun roll(pinsDown: Int) {

@@ -39,7 +39,7 @@ class AcceptanceTest {
     fun mixSparesAndStrikes() {
         val game = Game()
 
-        (1..10).forEach {
+        (1..5).forEach {
             game.roll(4)
             game.roll(6)
             game.roll(10)
