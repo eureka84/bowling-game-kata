@@ -15,7 +15,7 @@ class Game {
 
     fun score(): Int {
         val frames = computeFrames()
-        val nextTwoRolls = { i: Int ->
+        val nextTwoThrowsPinsKnockedDown = { i: Int ->
             when {
                 frames[i + 1].isStrike() -> 10 + frames[i + 2][0]
                 else -> frames[i + 1].sum()
@@ -27,7 +27,7 @@ class Game {
             when {
                 isBonusFrame -> 0
                 frame.isSpare() -> 10 + frames[index + 1][0]
-                frame.isStrike() -> 10 + nextTwoRolls(index)
+                frame.isStrike() -> 10 + nextTwoThrowsPinsKnockedDown(index)
                 else -> frame.sum()
             }
         }.sum()
