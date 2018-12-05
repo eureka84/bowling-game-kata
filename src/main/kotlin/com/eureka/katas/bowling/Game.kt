@@ -1,12 +1,10 @@
 package com.eureka.katas.bowling
 
-class Game {
+const val TOTAL_PINS = 10
+const val MAX_THROWS_PER_FRAME = 2
+const val NUMBER_OF_FRAMES = 10
 
-    companion object {
-        const val TOTAL_PINS = 10
-        const val MAX_THROWS_PER_FRAME = 2
-        const val NUMBER_OF_FRAMES = 10
-    }
+class Game {
 
     private val rolls = mutableListOf<Int>()
 
