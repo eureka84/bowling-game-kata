@@ -43,7 +43,7 @@ class Game {
                 isFrameCompleted ->
                     loop(rolls, listOf(), frames.plus<Frame>(frame), 0, 0)
                 else ->
-                    loop(rolls.tail(), frame.plus(rolls[0]), frames, throws + 1, knockedDown + rolls[0])
+                    loop(rolls.tail(), frame.plus(rolls.head()), frames, throws + 1, knockedDown + rolls.head())
             }
         }
         return loop(rolls, listOf(), listOf(), 0, 0)
@@ -51,4 +51,8 @@ class Game {
 
 }
 
-private fun <T> List<T>.tail() = if (this.isEmpty()) this else this.subList(1, this.size)
+private fun <T> List<T>.tail(): List<T> =
+        if (this.isEmpty()) throw IllegalAccessException("Tail of empty list") else this.subList(1, this.size)
+
+private fun <T> List<T>.head(): T =
+        if (this.isEmpty()) throw IllegalAccessException("Head of empty list") else this[0]
