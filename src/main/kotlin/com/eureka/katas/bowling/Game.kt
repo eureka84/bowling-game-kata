@@ -7,22 +7,14 @@ fun Frame.isSpare(): Boolean = this.sum() == 10 && this.size == 2
 
 class Game {
 
-    private val listOfPinsDown = mutableListOf<Int>()
+    private val rolls = mutableListOf<Int>()
 
-    private val frames: List<Frame>
-        get() {
-            fun loop(pins: List<Int>, curr: Frame, acc: List<Frame>, numberOfThrows: Int, sum: Int): List<Frame> {
-                val isFrameCompleted = numberOfThrows == 2 || sum == 10
-                return when {
-                    pins.isEmpty() -> if (curr.isEmpty()) acc else acc.plus<Frame>(curr)
-                    isFrameCompleted -> loop(pins, listOf(), acc.plus<Frame>(curr), 0, 0)
-                    else -> loop(pins.subList(1, pins.size), curr.plus(pins[0]), acc, numberOfThrows + 1, sum + pins[0])
-                }
-            }
-            return loop(listOfPinsDown, listOf(), listOf(), 0, 0)
-        }
+    fun roll(pinsKnockedDown: Int) {
+        rolls.add(pinsKnockedDown)
+    }
 
     fun score(): Int {
+        val frames = computeFrames()
         val nextTwoRolls = { i: Int ->
             when {
                 frames[i + 1].isStrike() -> 10 + frames[i + 2][0]
@@ -41,8 +33,19 @@ class Game {
         }.sum()
     }
 
-    fun roll(pinsDown: Int) {
-        listOfPinsDown.add(pinsDown)
+    private fun computeFrames(): List<Frame> {
+        fun loop(rolls: List<Int>, frame: Frame, frames: List<Frame>, throws: Int, knockedDown: Int): List<Frame> {
+            val isFrameCompleted = throws == 2 || knockedDown == 10
+            return when {
+                rolls.isEmpty() ->
+                    if (frame.isEmpty()) frames else frames.plus<Frame>(frame)
+                isFrameCompleted ->
+                    loop(rolls, listOf(), frames.plus<Frame>(frame), 0, 0)
+                else ->
+                    loop(rolls.subList(1, rolls.size), frame.plus(rolls[0]), frames, throws + 1, knockedDown + rolls[0])
+            }
+        }
+        return loop(rolls, listOf(), listOf(), 0, 0)
     }
 
 }
