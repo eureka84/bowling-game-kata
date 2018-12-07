@@ -23,13 +23,13 @@ class Game {
                 else -> frames[i + 1].sum()
             }
         }
+        val isBonusFrame = { frameNumber: Int -> frameNumber > NUMBER_OF_FRAMES - 1 }
 
-        return frames.mapIndexed { index, frame ->
-            val isBonusFrame = index > NUMBER_OF_FRAMES - 1
+        return frames.mapIndexed { frameNumber, frame ->
             when {
-                isBonusFrame -> 0
-                frame.isSpare() -> TOTAL_PINS + frames[index + 1][0]
-                frame.isStrike() -> TOTAL_PINS + nextTwoThrowsPinsKnockedDown(index)
+                isBonusFrame(frameNumber) -> 0
+                frame.isSpare() -> TOTAL_PINS + frames[frameNumber + 1][0]
+                frame.isStrike() -> TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frameNumber)
                 else -> frame.sum()
             }
         }.sum()
