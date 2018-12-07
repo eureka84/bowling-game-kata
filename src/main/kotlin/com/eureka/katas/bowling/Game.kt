@@ -22,27 +22,27 @@ class Game {
                 isBonusFrame(frameNumber) -> 0
                 frame.isSpare() -> TOTAL_PINS + frames[frameNumber + 1].firstThrow()
                 frame.isStrike() -> TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
-                else -> frame.sum()
+                else -> frame.pinsKnockedDown()
             }
         }.sum()
     }
 
     private fun currentFrames(): List<Frame> {
         val isFrameCompleted = { throws: Int, k: PinsKnockedDown -> throws == MAX_THROWS_PER_FRAME || k == TOTAL_PINS }
-        fun loop(ps: List<PinsKnockedDown>, f: Frame, fs: List<Frame>, throws: Int, k: PinsKnockedDown): List<Frame> {
+        fun loop(rs: List<PinsKnockedDown>, f: Frame, fs: List<Frame>, throws: Int, k: PinsKnockedDown): List<Frame> {
             return when {
-                ps.isEmpty() -> if (f.isEmpty()) fs else fs.plus<Frame>(f)
-                isFrameCompleted(throws, k) -> loop(ps, listOf(), fs.plus<Frame>(f), 0, 0)
-                else -> loop(ps.tail(), f.plus(ps.head()), fs, throws + 1, k + ps.head())
+                rs.isEmpty() -> if (f.isEmpty()) fs else fs.plus<Frame>(f)
+                isFrameCompleted(throws, k) -> loop(rs, emptyList(), fs.plus<Frame>(f), 0, 0)
+                else -> loop(rs.tail(), f.plus(rs.head()), fs, throws + 1, k + rs.head())
             }
         }
-        return loop(rolls, listOf(), listOf(), 0, 0)
+        return loop(rolls, emptyFrame(), emptyList(), 0, 0)
     }
 
     private fun nextTwoThrowsPinsKnockedDown(frames: List<Frame>, frameNumber: Int) =
         when {
             frames[frameNumber + 1].isStrike() -> TOTAL_PINS + frames[frameNumber + 2].firstThrow()
-            else -> frames[frameNumber + 1].sum()
+            else -> frames[frameNumber + 1].pinsKnockedDown()
         }
 
     private fun isBonusFrame(frameNumber: Int) = frameNumber > NUMBER_OF_FRAMES - 1
@@ -52,6 +52,8 @@ class Game {
 fun Frame.isStrike(): Boolean = this.sum() == TOTAL_PINS && this.size == 1
 fun Frame.isSpare(): Boolean = this.sum() == TOTAL_PINS && this.size == MAX_THROWS_PER_FRAME
 fun Frame.firstThrow(): PinsKnockedDown = this[0]
+fun Frame.pinsKnockedDown(): PinsKnockedDown = this.sum()
+fun emptyFrame(): Frame = emptyList()
 
 private fun <T> List<T>.tail(): List<T> =
         if (this.isEmpty()) throw IllegalAccessException("Tail of empty list") else this.subList(1, this.size)
