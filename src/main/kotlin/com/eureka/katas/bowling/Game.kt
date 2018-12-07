@@ -4,8 +4,6 @@ const val TOTAL_PINS = 10
 const val MAX_THROWS_PER_FRAME = 2
 const val NUMBER_OF_FRAMES = 10
 
-typealias PinsKnockedDown = Int
-
 class Game {
 
     private val rolls = mutableListOf<PinsKnockedDown>()

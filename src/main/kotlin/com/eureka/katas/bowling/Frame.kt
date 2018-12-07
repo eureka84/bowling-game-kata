@@ -1,5 +1,6 @@
 package com.eureka.katas.bowling
 
+typealias PinsKnockedDown = Int
 typealias Frame = List<Int>
 
 fun Frame.isStrike(): Boolean = this.sum() == TOTAL_PINS && this.size == 1
