@@ -36,15 +36,12 @@ class Game {
     }
 
     private fun computeFrames(): List<Frame> {
-        fun loop(rolls: List<PinsKnockedDown>, frame: Frame, frames: List<Frame>, throws: Int, k: PinsKnockedDown): List<Frame> {
-            val isFrameCompleted = throws == MAX_THROWS_PER_FRAME || k == TOTAL_PINS
+        val isFrameCompleted = { throws: Int, k: PinsKnockedDown -> throws == MAX_THROWS_PER_FRAME || k == TOTAL_PINS }
+        fun loop(ps: List<PinsKnockedDown>, f: Frame, fs: List<Frame>, throws: Int, k: PinsKnockedDown): List<Frame> {
             return when {
-                rolls.isEmpty() ->
-                    if (frame.isEmpty()) frames else frames.plus<Frame>(frame)
-                isFrameCompleted ->
-                    loop(rolls, listOf(), frames.plus<Frame>(frame), 0, 0)
-                else ->
-                    loop(rolls.tail(), frame.plus(rolls.head()), frames, throws + 1, k + rolls.head())
+                ps.isEmpty() -> if (f.isEmpty()) fs else fs.plus<Frame>(f)
+                isFrameCompleted(throws, k) -> loop(ps, listOf(), fs.plus<Frame>(f), 0, 0)
+                else -> loop(ps.tail(), f.plus(ps.head()), fs, throws + 1, k + ps.head())
             }
         }
         return loop(rolls, listOf(), listOf(), 0, 0)
