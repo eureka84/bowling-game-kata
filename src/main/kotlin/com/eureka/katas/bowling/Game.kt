@@ -29,7 +29,7 @@ class Game {
         fun loop(rs: List<PinsKnockedDown>, f: Frame, fs: List<Frame>, throws: Int, k: PinsKnockedDown): List<Frame> {
             return when {
                 rs.isEmpty() -> if (f.isEmpty()) fs else fs.plus<Frame>(f)
-                isFrameCompleted(throws, k) -> loop(rs, emptyList(), fs.plus<Frame>(f), 0, 0)
+                isFrameCompleted(throws, k) -> loop(rs, emptyFrame(), fs.plus<Frame>(f), 0, 0)
                 else -> loop(rs.tail(), f.plus(rs.head()), fs, throws + 1, k + rs.head())
             }
         }
