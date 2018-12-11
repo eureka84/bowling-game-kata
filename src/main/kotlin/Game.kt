@@ -33,7 +33,7 @@ class Game {
                 else -> loop(rs.tail(), f.plus(rs.head()), fs, throws + 1, k + rs.head())
             }
         }
-        return loop(rolls, emptyFrame(), emptyList(), 0, 0)
+        return loop(rolls, emptyFrame(), listOf(), 0, 0)
     }
 
     private fun nextTwoThrowsPinsKnockedDown(frames: List<Frame>, frameNumber: Int) =
