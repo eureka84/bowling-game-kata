@@ -1,30 +1,30 @@
 typealias PinsKnockedDown = Int
 
-sealed class KFrame {
+sealed class Frame {
     abstract val firstThrow: PinsKnockedDown
     abstract val pinsKnockedDown: PinsKnockedDown
 }
 
-object Strike : KFrame() {
+object Strike : Frame() {
     override val firstThrow: PinsKnockedDown = TOTAL_PINS
     override val pinsKnockedDown: PinsKnockedDown = TOTAL_PINS
 }
 
-data class Spare (
-    override val firstThrow: PinsKnockedDown,
-    private val secondThrow: PinsKnockedDown = 0
-) : KFrame() {
+data class Spare(
+        override val firstThrow: PinsKnockedDown,
+        private val secondThrow: PinsKnockedDown = 0
+) : Frame() {
     override val pinsKnockedDown: PinsKnockedDown = TOTAL_PINS
 }
 
-data class NonStrike(
+data class Simple(
         override val firstThrow: PinsKnockedDown,
         private val secondThrow: PinsKnockedDown = 0
-) : KFrame() {
+) : Frame() {
     override val pinsKnockedDown: PinsKnockedDown = firstThrow + secondThrow
 }
 
-fun List<PinsKnockedDown>.toFrames(): List<KFrame> {
+fun List<PinsKnockedDown>.toFrames(): List<Frame> {
     val isFrameCompleted = { throws: Int, k: PinsKnockedDown ->
         throws == MAX_THROWS_PER_FRAME || k == TOTAL_PINS
     }
@@ -48,12 +48,13 @@ fun List<PinsKnockedDown>.toFrames(): List<KFrame> {
     return loop(this, emptyFrame(), listOf(), 0, 0).map { pseudoFrame ->
         when {
             pseudoFrame.size == 1 && pseudoFrame.sum() == TOTAL_PINS -> Strike
-            pseudoFrame.size == 1 -> NonStrike(pseudoFrame[0])
+            pseudoFrame.size == 1 -> Simple(pseudoFrame[0]) // used for running calculations
             pseudoFrame.sum() == TOTAL_PINS -> Spare(pseudoFrame[0], pseudoFrame[1])
-            else -> NonStrike(pseudoFrame[0], pseudoFrame[1])
+            else -> Simple(pseudoFrame[0], pseudoFrame[1])
         }
     }
 }
 
 typealias PseudoFrame = List<PinsKnockedDown>
+
 fun emptyFrame(): PseudoFrame = listOf()

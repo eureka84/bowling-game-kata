@@ -22,8 +22,7 @@ class Game {
         }.sum()
     }
 
-
-    private fun nextTwoThrowsPinsKnockedDown(frames: List<KFrame>, frameNumber: Int) =
+    private fun nextTwoThrowsPinsKnockedDown(frames: List<Frame>, frameNumber: Int) =
             when(frames[frameNumber + 1]) {
                 Strike -> TOTAL_PINS + frames[frameNumber + 2].firstThrow
                 else -> frames[frameNumber + 1].pinsKnockedDown
