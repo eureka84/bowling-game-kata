@@ -1,5 +1,3 @@
-package com.eureka.katas.bowling
-
 import io.kotlintest.matchers.shouldBe
 import org.junit.Test
 
