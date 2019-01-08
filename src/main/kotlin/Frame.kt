@@ -14,6 +14,11 @@ data class Spare(
         override val firstThrow: PinsKnockedDown,
         private val secondThrow: PinsKnockedDown
 ) : Frame() {
+    init {
+        require(firstThrow + secondThrow == TOTAL_PINS)
+        { "Spare pinsKnockerDown should equal $TOTAL_PINS" }
+    }
+
     override val pinsKnockedDown: PinsKnockedDown = TOTAL_PINS
 }
 
@@ -21,6 +26,11 @@ data class Simple(
         override val firstThrow: PinsKnockedDown,
         private val secondThrow: PinsKnockedDown = 0
 ) : Frame() {
+    init {
+        require(firstThrow + secondThrow < TOTAL_PINS)
+        { "If pinsKnockerDown equal $TOTAL_PINS with 2 throws than it's a Spare" }
+    }
+
     override val pinsKnockedDown: PinsKnockedDown = firstThrow + secondThrow
 }
 
