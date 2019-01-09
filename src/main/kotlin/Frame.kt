@@ -39,27 +39,27 @@ fun List<PinsKnockedDown>.toFrames(): List<Frame> {
         throws == MAX_THROWS_PER_FRAME || k == TOTAL_PINS
     }
 
-    fun loop(rs: List<PinsKnockedDown>, f: PseudoFrame, fs: List<PseudoFrame>, throws: Int, k: PinsKnockedDown)
-            : List<PseudoFrame> =
+    fun loop(rs: List<PinsKnockedDown>, f: PseudoFrame, fs: List<Frame>, throws: Int, k: PinsKnockedDown)
+            : List<Frame> =
             when {
                 rs.isEmpty() ->
-                    if (f.isEmpty()) fs else fs.plus<PseudoFrame>(f)
+                    if (f.isEmpty()) fs else fs.plus(f.toFrame())
                 isFrameCompleted(throws, k) ->
-                    loop(rs, emptyFrame(), fs.plus<PseudoFrame>(f), 0, 0)
+                    loop(rs, emptyPseudoFrame(), fs.plus(f.toFrame()), 0, 0)
                 else ->
                     loop(rs.tail(), f.plus(rs.head()), fs, throws + 1, k + rs.head())
             }
 
-    return loop(this, emptyFrame(), listOf(), 0, 0).map { pseudoFrame ->
-        when {
-            pseudoFrame.size == 1 && pseudoFrame.sum() == TOTAL_PINS -> Strike
-            pseudoFrame.size == 1 -> Simple(pseudoFrame[0]) // used for incomplete games
-            pseudoFrame.sum() == TOTAL_PINS -> Spare(pseudoFrame[0], pseudoFrame[1])
-            else -> Simple(pseudoFrame[0], pseudoFrame[1])
-        }
-    }
+    return loop(this, emptyPseudoFrame(), listOf(), 0, 0)
 }
 
 typealias PseudoFrame = List<PinsKnockedDown>
+fun PseudoFrame.toFrame(): Frame =
+        when {
+            this.size == 1 && this.sum() == TOTAL_PINS -> Strike
+            this.size == 1 -> Simple(this[0]) // used for incomplete games
+            this.sum() == TOTAL_PINS -> Spare(this[0], this[1])
+            else -> Simple(this[0], this[1])
+        }
 
-fun emptyFrame(): PseudoFrame = listOf()
+fun emptyPseudoFrame(): PseudoFrame = listOf()
