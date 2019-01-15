@@ -48,9 +48,9 @@ fun List<PinsKnockedDown>.toFrames(): List<Frame> {
     return loop(this, emptyPseudoFrame(), listOf(), 0, 0)
 }
 
-typealias PseudoFrame = List<PinsKnockedDown>
+private typealias PseudoFrame = List<PinsKnockedDown>
 
-fun PseudoFrame.toFrame(): Frame =
+private fun PseudoFrame.toFrame(): Frame =
         when {
             this.size == 1 && this.sum() == TOTAL_PINS -> Strike
             this.size == 1 -> Simple(this[0]) // used for incomplete games
@@ -58,4 +58,4 @@ fun PseudoFrame.toFrame(): Frame =
             else -> Simple(this[0], this[1])
         }
 
-fun emptyPseudoFrame(): PseudoFrame = listOf()
+private fun emptyPseudoFrame(): PseudoFrame = listOf()
