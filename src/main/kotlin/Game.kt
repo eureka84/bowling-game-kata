@@ -10,17 +10,17 @@ class Game {
         rolls.add(p)
     }
 
-    fun score(): Int {
-        val frames = rolls.toFrames()
-        return frames.mapIndexed { frameNumber, frame ->
-            when {
-                isBonusFrame(frameNumber) -> 0
-                frame is Strike -> TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
-                frame is Spare -> TOTAL_PINS + frames[frameNumber + 1].firstThrow
-                else -> frame.pinsKnockedDown
-            }
-        }.sum()
-    }
+    fun score(): Int =
+        rolls.toFrames().let { frames ->
+            frames.mapIndexed { frameNumber, frame ->
+                when {
+                    isBonusFrame(frameNumber) -> 0
+                    frame is Strike -> TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
+                    frame is Spare -> TOTAL_PINS + frames[frameNumber + 1].firstThrow
+                    else -> frame.pinsKnockedDown
+                }
+            }.sum()
+        }
 
     private fun nextTwoThrowsPinsKnockedDown(frames: List<Frame>, frameNumber: Int) =
             when(frames[frameNumber + 1]) {
