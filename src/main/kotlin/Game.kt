@@ -15,9 +15,12 @@ class Game {
             frames.mapIndexed { frameNumber, frame ->
                 when {
                     isBonusFrame(frameNumber) -> 0
-                    frame is Strike -> TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
-                    frame is Spare -> TOTAL_PINS + frames[frameNumber + 1].firstThrow
-                    else -> frame.pinsKnockedDown
+                    frame is Strike ->
+                        TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
+                    frame is Spare ->
+                        TOTAL_PINS + frames[frameNumber + 1].firstThrow
+                    else ->
+                        frame.pinsKnockedDown
                 }
             }.sum()
         }
