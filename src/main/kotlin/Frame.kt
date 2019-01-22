@@ -10,7 +10,10 @@ object Strike : Frame() {
     override val pinsKnockedDown: PinsKnockedDown = TOTAL_PINS
 }
 
-data class Spare(override val firstThrow: PinsKnockedDown, private val secondThrow: PinsKnockedDown) : Frame() {
+data class Spare(
+        override val firstThrow: PinsKnockedDown,
+        private val secondThrow: PinsKnockedDown
+) : Frame() {
     init {
         require(firstThrow + secondThrow == TOTAL_PINS) {
             "Spare pinsKnockerDown should equal $TOTAL_PINS"
@@ -20,7 +23,10 @@ data class Spare(override val firstThrow: PinsKnockedDown, private val secondThr
     override val pinsKnockedDown: PinsKnockedDown = TOTAL_PINS
 }
 
-data class Simple(override val firstThrow: PinsKnockedDown, private val secondThrow: PinsKnockedDown = 0) : Frame() {
+data class Simple(
+        override val firstThrow: PinsKnockedDown,
+        private val secondThrow: PinsKnockedDown = 0
+) : Frame() {
     init {
         require(firstThrow + secondThrow < TOTAL_PINS) {
             "If pinsKnockerDown equal $TOTAL_PINS with 2 throws than it's a Spare"
@@ -31,11 +37,17 @@ data class Simple(override val firstThrow: PinsKnockedDown, private val secondTh
 }
 
 fun List<PinsKnockedDown>.toFrames(): List<Frame> {
+
     val isFrameCompleted = { throws: Int, k: PinsKnockedDown ->
         throws == MAX_THROWS_PER_FRAME || k == TOTAL_PINS
     }
 
-    fun loop(rs: List<PinsKnockedDown>, f: PseudoFrame, fs: List<Frame>, throws: Int, k: PinsKnockedDown): List<Frame> =
+    fun loop(rs: List<PinsKnockedDown>,
+             f: PseudoFrame,
+             fs: List<Frame>,
+             throws: Int,
+             k: PinsKnockedDown
+    ): List<Frame> =
             when {
                 rs.isEmpty() ->
                     if (f.isEmpty()) fs else fs + f.toFrame()
