@@ -16,7 +16,7 @@ data class Spare(
 ) : Frame() {
     init {
         require(firstThrow + secondThrow == TOTAL_PINS) {
-            "Spare pinsKnockerDown should equal $TOTAL_PINS"
+            "Spare pins knocked down should equal $TOTAL_PINS"
         }
     }
 
@@ -29,7 +29,7 @@ data class Simple(
 ) : Frame() {
     init {
         require(firstThrow + secondThrow < TOTAL_PINS) {
-            "If pinsKnockerDown equal $TOTAL_PINS with 2 throws than it's a Spare"
+            "If pins knocked down equal $TOTAL_PINS with 2 throws than it's a Spare"
         }
     }
 
