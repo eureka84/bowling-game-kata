@@ -1,5 +1,3 @@
-package com.eureka.katas.bowling
-
 import org.junit.Test
 import kotlin.test.assertEquals
 

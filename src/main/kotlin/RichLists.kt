@@ -1,5 +1,3 @@
-package com.eureka.katas.bowling
-
 fun <T> List<T>.tail(): List<T> =
         if (this.isEmpty()) throw IllegalAccessException("Tail of empty list") else this.subList(1, this.size)
 
