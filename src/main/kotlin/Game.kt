@@ -11,25 +11,29 @@ class Game {
     }
 
     fun score(): Int =
-        rolls.toFrames().let { frames ->
-            frames.mapIndexed { frameNumber, frame ->
-                when {
-                    isBonusFrame(frameNumber) -> 0
-                    frame is Strike ->
-                        TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
-                    frame is Spare ->
-                        TOTAL_PINS + frames[frameNumber + 1].firstThrow
-                    else ->
-                        frame.pinsKnockedDown
-                }
-            }.sum()
-        }
+            rolls.toFrames().let { frames ->
+                frames.mapIndexed { frameNumber, frame ->
+                    when {
+                        isBonusFrame(frameNumber) -> 0
+                        frame is Strike ->
+                            TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
+                        frame is Spare ->
+                            TOTAL_PINS + frames.at(frameNumber + 1).fold({ 0 }, { it.firstThrow })
+                        else ->
+                            frame.pinsKnockedDown
+                    }
+                }.sum()
+            }
 
     private fun nextTwoThrowsPinsKnockedDown(frames: List<Frame>, frameNumber: Int) =
-            when(frames[frameNumber + 1]) {
-                Strike -> TOTAL_PINS + frames[frameNumber + 2].firstThrow
-                else -> frames[frameNumber + 1].pinsKnockedDown
-            }
+            frames.at(frameNumber + 1).fold(
+                    { 0 },
+                    { frame ->
+                        when (frame) {
+                            is Strike -> TOTAL_PINS + frames.at(frameNumber + 2).fold({ 0 }, { it.firstThrow })
+                            else -> frame.pinsKnockedDown
+                        }
+                    })
 
     private fun isBonusFrame(frameNumber: Int) = frameNumber > NUMBER_OF_FRAMES - 1
 
