@@ -44,6 +44,9 @@ class BowlingGameTest {
         val game = Game()
 
         rollOneSpare(game)
+
+        game.score() shouldBe 10
+
         game.roll(3)
         game.roll(4)
         rollOneSpare(game)
@@ -68,6 +71,9 @@ class BowlingGameTest {
         val game = Game()
 
         rollAStrike(game)
+
+        game.score() shouldBe 10
+
         game.roll(3)
         game.roll(4)
 
