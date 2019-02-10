@@ -18,26 +18,27 @@ class Game {
                         frame is Strike ->
                             TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
                         frame is Spare ->
-                            TOTAL_PINS + nextFrameFirstThrowPinsKnockedDown(frames, frameNumber)
+                            TOTAL_PINS + frames.after(frameNumber).firstThrow()
                         else ->
                             frame.pinsKnockedDown
                     }
                 }.sum()
             }
 
+    private fun isBonusFrame(frameNumber: Int) = frameNumber > NUMBER_OF_FRAMES - 1
+
     private fun nextTwoThrowsPinsKnockedDown(frames: List<Frame>, frameNumber: Int) =
-            frames.at(frameNumber + 1).fold(
+            frames.after(frameNumber).fold(
                     { 0 },
                     { frame ->
                         when (frame) {
-                            is Strike -> TOTAL_PINS + frames.at(frameNumber + 2).fold({ 0 }, { it.firstThrow })
+                            is Strike -> TOTAL_PINS + frames.after(frameNumber + 1).firstThrow()
                             else -> frame.pinsKnockedDown
                         }
                     })
 
-    private fun nextFrameFirstThrowPinsKnockedDown(frames: List<Frame>, frameNumber: Int) =
-            frames.at(frameNumber + 1).fold({ 0 }, { it.firstThrow })
+    private fun List<Frame>.after(frameNumber: Int): Maybe<Frame> = this.at(frameNumber + 1)
 
-    private fun isBonusFrame(frameNumber: Int) = frameNumber > NUMBER_OF_FRAMES - 1
+    private fun Maybe<Frame>.firstThrow(): PinsKnockedDown = this.fold({ 0 }, { f -> f.firstThrow })
 
 }
