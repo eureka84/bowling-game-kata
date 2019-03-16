@@ -36,7 +36,9 @@ data class Simple(
     override val pinsKnockedDown: PinsKnockedDown = firstThrow + secondThrow
 }
 
-fun List<PinsKnockedDown>.toFrames(): List<Frame> {
+typealias Frames = List<Frame>
+
+fun List<PinsKnockedDown>.toFrames(): Frames {
 
     val isFrameCompleted = { throws: Int, k: PinsKnockedDown ->
         throws == MAX_THROWS_PER_FRAME || k == TOTAL_PINS
@@ -47,7 +49,7 @@ fun List<PinsKnockedDown>.toFrames(): List<Frame> {
              fs: List<Frame>,
              throws: Int,
              k: PinsKnockedDown
-    ): List<Frame> =
+    ): Frames =
             when {
                 rs.isEmpty() ->
                     if (f.isEmpty()) fs else fs + f.toFrame()

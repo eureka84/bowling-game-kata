@@ -27,7 +27,7 @@ class Game {
 
     private fun isBonusFrame(frameNumber: Int) = frameNumber > NUMBER_OF_FRAMES - 1
 
-    private fun nextTwoThrowsPinsKnockedDown(frames: List<Frame>, frameNumber: Int) =
+    private fun nextTwoThrowsPinsKnockedDown(frames: Frames, frameNumber: Int) =
             frames.after(frameNumber).fold(
                     { 0 },
                     { frame ->
@@ -37,7 +37,7 @@ class Game {
                         }
                     })
 
-    private fun List<Frame>.after(frameNumber: Int): Maybe<Frame> = this.at(frameNumber + 1)
+    private fun Frames.after(frameNumber: Int): Maybe<Frame> = this.at(frameNumber + 1)
 
     private fun Maybe<Frame>.firstThrow(): PinsKnockedDown = this.fold({ 0 }, { f -> f.firstThrow })
 
