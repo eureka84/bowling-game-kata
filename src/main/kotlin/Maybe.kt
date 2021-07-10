@@ -16,4 +16,9 @@ sealed class Maybe<out T> {
 }
 
 object Empty : Maybe<Nothing>()
-data class Just<T>(val value: T): Maybe<T>()
+data class Just<T>(val value: T) : Maybe<T>()
+
+fun <T> Maybe<T>.orElse(tSupplier: () -> T) = when (this) {
+    is Empty -> tSupplier()
+    is Just -> this.value
+}
