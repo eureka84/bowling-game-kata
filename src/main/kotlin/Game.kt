@@ -12,20 +12,15 @@ class Game {
     }
 
     fun score(): Int =
-        frames.mapIndexed { frameNumber, frame ->
-            when {
-                frameNumber.isBonusFrame() -> 0
-                frame is Strike ->
-                    TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
-                frame is Spare ->
-                    TOTAL_PINS + frames.after(frameNumber).firstThrow()
-                else ->
-                    frame.pinsKnockedDown
-            }
-        }.sum()
-
-
-    private fun Int.isBonusFrame() = this > NUMBER_OF_FRAMES - 1
+        frames
+            .take(NUMBER_OF_FRAMES)
+            .mapIndexed { frameNumber, frame ->
+                when (frame) {
+                    is Strike -> TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
+                    is Spare -> TOTAL_PINS + frames.after(frameNumber).firstThrow()
+                    else -> frame.pinsKnockedDown
+                }
+            }.sum()
 
     private fun nextTwoThrowsPinsKnockedDown(frames: Frames, frameNumber: Int) =
         frames
