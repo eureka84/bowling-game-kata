@@ -4,41 +4,50 @@ const val NUMBER_OF_FRAMES = 10
 
 class Game {
 
-    private val rolls = mutableListOf<PinsKnockedDown>()
+    private var context: Context = Context()
+    private val frames: Frames get() = context.frames.value
 
     fun roll(p: PinsKnockedDown) {
-        rolls.add(p)
+        context += p
     }
 
     fun score(): Int =
-            rolls.toFrames().let { frames ->
-                frames.mapIndexed { frameNumber, frame ->
-                    when {
-                        isBonusFrame(frameNumber) -> 0
-                        frame is Strike ->
-                            TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
-                        frame is Spare ->
-                            TOTAL_PINS + frames.after(frameNumber).firstThrow()
-                        else ->
-                            frame.pinsKnockedDown
-                    }
-                }.sum()
+        frames.mapIndexed { frameNumber, frame ->
+            when {
+                frameNumber.isBonusFrame() -> 0
+                frame is Strike ->
+                    TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
+                frame is Spare ->
+                    TOTAL_PINS + frames.after(frameNumber).firstThrow()
+                else ->
+                    frame.pinsKnockedDown
             }
+        }.sum()
 
-    private fun isBonusFrame(frameNumber: Int) = frameNumber > NUMBER_OF_FRAMES - 1
+
+    private fun Int.isBonusFrame() = this > NUMBER_OF_FRAMES - 1
 
     private fun nextTwoThrowsPinsKnockedDown(frames: Frames, frameNumber: Int) =
-            frames.after(frameNumber).fold(
-                    { 0 },
-                    { frame ->
-                        when (frame) {
-                            is Strike -> TOTAL_PINS + frames.after(frameNumber + 1).firstThrow()
-                            else -> frame.pinsKnockedDown
-                        }
-                    })
+        frames
+            .after(frameNumber)
+            .map { frame ->
+                when (frame) {
+                    is Strike -> TOTAL_PINS + frames.after(frameNumber + 1).firstThrow()
+                    else -> frame.pinsKnockedDown
+                }
+            }.orElse { 0 }
 
     private fun Frames.after(frameNumber: Int): Maybe<Frame> = this.at(frameNumber + 1)
 
-    private fun Maybe<Frame>.firstThrow(): PinsKnockedDown = this.fold({ 0 }, { f -> f.firstThrow })
+    private fun Maybe<Frame>.firstThrow(): PinsKnockedDown = this.map { it.firstThrow }.orElse { 0 }
+
+    class Context(private val rolls: MutableList<PinsKnockedDown> = mutableListOf()) {
+        val frames: Lazy<Frames> = lazy { rolls.toFrames() }
+
+        operator fun plus(pins: PinsKnockedDown): Context {
+            rolls.add(pins)
+            return Context(rolls)
+        }
+    }
 
 }
