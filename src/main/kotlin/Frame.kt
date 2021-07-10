@@ -67,6 +67,6 @@ fun List<PinsKnockedDown>.toFrames(): Frames {
     return loop(this, emptyPseudoFrame(), mutableListOf())
 }
 
-private fun PseudoFrame.isComplete(): Boolean = this.sum() == TOTAL_PINS || this.size == 2
+private fun PseudoFrame.isComplete(): Boolean = this.sum() == TOTAL_PINS || this.size == MAX_THROWS_PER_FRAME
 
 private fun emptyPseudoFrame(): PseudoFrame = mutableListOf()
