@@ -5,14 +5,12 @@ sealed class Frame {
     abstract val pinsKnockedDown: PinsKnockedDown
 
     companion object {
-
         fun from(pseudoFrame: PseudoFrame): Frame = when {
             pseudoFrame.size == 1 && pseudoFrame.sum() == TOTAL_PINS -> Strike
             pseudoFrame.size == 1 -> Simple(pseudoFrame[0]) // used for incomplete games
             pseudoFrame.sum() == TOTAL_PINS -> Spare(pseudoFrame[0], pseudoFrame[1])
             else -> Simple(pseudoFrame[0], pseudoFrame[1])
         }
-
     }
 }
 
@@ -48,7 +46,7 @@ data class Simple(
 }
 
 typealias Frames = List<Frame>
-private typealias PseudoFrame = List<PinsKnockedDown>
+typealias PseudoFrame = List<PinsKnockedDown>
 
 fun List<PinsKnockedDown>.toFrames(): Frames {
     fun loop(

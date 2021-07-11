@@ -1,6 +1,6 @@
 const val TOTAL_PINS = 10
 const val MAX_THROWS_PER_FRAME = 2
-const val NUMBER_OF_FRAMES = 10
+const val TOTAL_NUMBER_OF_FRAMES = 10
 
 class Game {
 
@@ -13,16 +13,16 @@ class Game {
 
     fun score(): Int =
         frames
-            .take(NUMBER_OF_FRAMES)
-            .mapIndexed { frameNumber, frame ->
+            .take(TOTAL_NUMBER_OF_FRAMES)
+            .mapIndexed { currentIndex, frame ->
                 when (frame) {
-                    is Strike -> TOTAL_PINS + nextTwoThrowsPinsKnockedDown(frames, frameNumber)
-                    is Spare -> TOTAL_PINS + frames.after(frameNumber).firstThrow()
+                    is Strike -> TOTAL_PINS + pinsKnockedDownOnNextTwoThrows(frames, currentIndex)
+                    is Spare -> TOTAL_PINS + frames.after(currentIndex).firstThrow()
                     else -> frame.pinsKnockedDown
                 }
             }.sum()
 
-    private fun nextTwoThrowsPinsKnockedDown(frames: Frames, frameNumber: Int) =
+    private fun pinsKnockedDownOnNextTwoThrows(frames: Frames, frameNumber: Int) =
         frames
             .after(frameNumber)
             .map { frame ->
