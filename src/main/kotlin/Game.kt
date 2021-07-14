@@ -2,14 +2,26 @@ const val TOTAL_PINS = 10
 const val TOTAL_NUMBER_OF_FRAMES = 10
 
 typealias PinsKnockedDown = Int
+typealias Frames = MutableList<Frame>
 
 class Game {
 
-    private var context: Context = Context()
-    private val frames: Frames get() = context.frames
+    private val frames: Frames = mutableListOf()
 
     fun roll(p: PinsKnockedDown) {
-        context += p
+        when {
+            frames.isEmpty() -> frames.add(Frame(p))
+            else -> {
+                val last = frames.last()
+                when {
+                    last.isComplete() -> frames.add(Frame(p))
+                    else -> {
+                        frames.remove(last)
+                        frames.add(last + p)
+                    }
+                }
+            }
+        }
     }
 
     fun score(): Int =
@@ -29,8 +41,10 @@ class Game {
             .after(index)
             .map { frame ->
                 when {
-                    frame.isStrike() -> TOTAL_PINS + this.after(index + 1).pinsKnockedDownOnFirstThrow()
-                    else -> frame.pinsKnockedDown
+                    frame.isStrike() ->
+                        TOTAL_PINS + this.after(index + 1).pinsKnockedDownOnFirstThrow()
+                    else ->
+                        frame.pinsKnockedDown
                 }
             }.orElse { 0 }
 
@@ -38,13 +52,5 @@ class Game {
 
     private fun Maybe<Frame>.pinsKnockedDownOnFirstThrow(): PinsKnockedDown =
         this.map { it.pinsKnockedDownOnFirstThrow }.orElse { 0 }
-
-    class Context(private val rolls: List<PinsKnockedDown> = listOf()) {
-        val frames: Frames by lazy { rolls.toFrames() }
-
-        operator fun plus(pins: PinsKnockedDown): Context {
-            return Context(rolls + pins)
-        }
-    }
 
 }
