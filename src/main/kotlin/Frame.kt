@@ -1,3 +1,5 @@
+import PseudoFrame.Companion.emptyPseudoFrame
+
 typealias PinsKnockedDown = Int
 
 sealed class Frame {
@@ -6,10 +8,10 @@ sealed class Frame {
 
     companion object {
         fun from(pseudoFrame: PseudoFrame): Frame = when {
-            pseudoFrame.size == 1 && pseudoFrame.sum() == TOTAL_PINS -> Strike
-            pseudoFrame.size == 1 -> Simple(pseudoFrame[0]) // used for incomplete games
-            pseudoFrame.sum() == TOTAL_PINS -> Spare(pseudoFrame[0], pseudoFrame[1])
-            else -> Simple(pseudoFrame[0], pseudoFrame[1])
+            pseudoFrame.isStrike() -> Strike
+            pseudoFrame.isSpare() -> Spare(pseudoFrame.firstThrow!!, pseudoFrame.secondThrow!!)
+            pseudoFrame.isPartial() -> Simple(pseudoFrame.firstThrow!!)
+            else -> Simple(pseudoFrame.firstThrow!!, pseudoFrame.secondThrow!!)
         }
     }
 }
@@ -46,7 +48,34 @@ data class Simple(
 }
 
 typealias Frames = List<Frame>
-typealias PseudoFrame = List<PinsKnockedDown>
+
+data class PseudoFrame(val firstThrow: PinsKnockedDown? = null, val secondThrow: PinsKnockedDown? = null) {
+    fun isEmpty(): Boolean {
+        return firstThrow == null && secondThrow == null
+    }
+
+    operator fun plus(pinsKnockedDown: PinsKnockedDown): PseudoFrame =
+        if (firstThrow == null) {
+            PseudoFrame(pinsKnockedDown)
+        } else {
+            this.copy(secondThrow = pinsKnockedDown)
+        }
+
+    fun isComplete(): Boolean = firstThrow == TOTAL_PINS || (firstThrow != null && secondThrow != null)
+
+    fun isStrike(): Boolean = firstThrow == TOTAL_PINS
+
+    fun isSpare(): Boolean = (firstThrow.or(0) + secondThrow.or(0)) == TOTAL_PINS
+
+    fun isPartial(): Boolean = firstThrow != null && secondThrow == null
+
+    private fun Int?.or(default: Int): Int = this?:default
+
+    companion object {
+        fun emptyPseudoFrame() = PseudoFrame()
+    }
+
+}
 
 fun List<PinsKnockedDown>.toFrames(): Frames {
     fun loop(
@@ -64,7 +93,3 @@ fun List<PinsKnockedDown>.toFrames(): Frames {
 
     return loop(this, emptyPseudoFrame(), mutableListOf())
 }
-
-private fun PseudoFrame.isComplete(): Boolean = this.sum() == TOTAL_PINS || this.size == MAX_THROWS_PER_FRAME
-
-private fun emptyPseudoFrame(): PseudoFrame = mutableListOf()
