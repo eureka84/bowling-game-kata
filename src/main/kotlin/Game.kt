@@ -5,7 +5,7 @@ const val TOTAL_NUMBER_OF_FRAMES = 10
 class Game {
 
     private var context: Context = Context()
-    private val frames: Frames get() = context.frames.value
+    private val frames: Frames get() = context.frames
 
     fun roll(p: PinsKnockedDown) {
         context += p
@@ -36,12 +36,11 @@ class Game {
 
     private fun Maybe<Frame>.firstThrow(): PinsKnockedDown = this.map { it.firstThrow }.orElse { 0 }
 
-    class Context(private val rolls: MutableList<PinsKnockedDown> = mutableListOf()) {
-        val frames: Lazy<Frames> = lazy { rolls.toFrames() }
+    class Context(private val rolls: List<PinsKnockedDown> = listOf()) {
+        val frames: Frames by lazy { rolls.toFrames() }
 
         operator fun plus(pins: PinsKnockedDown): Context {
-            rolls.add(pins)
-            return Context(rolls)
+            return Context(rolls + pins)
         }
     }
 
