@@ -1,95 +1,48 @@
-import PseudoFrame.Companion.emptyPseudoFrame
+import Frame.Companion.emptyFrame
 
 typealias PinsKnockedDown = Int
 
-sealed class Frame {
-    abstract val firstThrow: PinsKnockedDown
-    abstract val pinsKnockedDown: PinsKnockedDown
-
-    companion object {
-        fun from(pseudoFrame: PseudoFrame): Frame = when {
-            pseudoFrame.isStrike() -> Strike
-            pseudoFrame.isSpare() -> Spare(pseudoFrame.firstThrow!!, pseudoFrame.secondThrow!!)
-            pseudoFrame.isPartial() -> Simple(pseudoFrame.firstThrow!!)
-            else -> Simple(pseudoFrame.firstThrow!!, pseudoFrame.secondThrow!!)
-        }
-    }
-}
-
-object Strike : Frame() {
-    override val firstThrow: PinsKnockedDown = TOTAL_PINS
-    override val pinsKnockedDown: PinsKnockedDown = TOTAL_PINS
-}
-
-data class Spare(
-    override val firstThrow: PinsKnockedDown,
-    private val secondThrow: PinsKnockedDown
-) : Frame() {
-    init {
-        require(firstThrow + secondThrow == TOTAL_PINS) {
-            "Spare pins knocked down should equal $TOTAL_PINS"
-        }
-    }
-
-    override val pinsKnockedDown: PinsKnockedDown = TOTAL_PINS
-}
-
-data class Simple(
-    override val firstThrow: PinsKnockedDown,
-    private val secondThrow: PinsKnockedDown = 0
-) : Frame() {
-    init {
-        require(firstThrow + secondThrow < TOTAL_PINS) {
-            "If pins knocked down equal $TOTAL_PINS with 2 throws than it's a Spare"
-        }
-    }
-
-    override val pinsKnockedDown: PinsKnockedDown = firstThrow + secondThrow
-}
-
 typealias Frames = List<Frame>
 
-data class PseudoFrame(val firstThrow: PinsKnockedDown? = null, val secondThrow: PinsKnockedDown? = null) {
-    fun isEmpty(): Boolean {
-        return firstThrow == null && secondThrow == null
-    }
+data class Frame(val firstThrow: PinsKnockedDown? = null, val secondThrow: PinsKnockedDown? = null) {
 
-    operator fun plus(pinsKnockedDown: PinsKnockedDown): PseudoFrame =
+    val pinsKnockedDown: PinsKnockedDown = firstThrow.or(0) + secondThrow.or(0)
+
+    operator fun plus(pinsKnockedDown: PinsKnockedDown): Frame =
         if (firstThrow == null) {
-            PseudoFrame(pinsKnockedDown)
+            this.copy(firstThrow = pinsKnockedDown)
         } else {
             this.copy(secondThrow = pinsKnockedDown)
         }
+
+    fun isEmpty(): Boolean {
+        return firstThrow == null && secondThrow == null
+    }
 
     fun isComplete(): Boolean = firstThrow == TOTAL_PINS || (firstThrow != null && secondThrow != null)
 
     fun isStrike(): Boolean = firstThrow == TOTAL_PINS
 
-    fun isSpare(): Boolean = (firstThrow.or(0) + secondThrow.or(0)) == TOTAL_PINS
-
-    fun isPartial(): Boolean = firstThrow != null && secondThrow == null
-
-    private fun Int?.or(default: Int): Int = this?:default
+    fun isSpare(): Boolean = pinsKnockedDown == TOTAL_PINS
 
     companion object {
-        fun emptyPseudoFrame() = PseudoFrame()
+        fun emptyFrame() = Frame()
     }
-
 }
 
 fun List<PinsKnockedDown>.toFrames(): Frames {
     fun loop(
         rolls: List<PinsKnockedDown>,
-        pseudoFrame: PseudoFrame,
+        frame: Frame,
         result: Frames
     ): Frames =
-        if (pseudoFrame.isComplete()) {
-            loop(rolls, emptyPseudoFrame(), result + Frame.from(pseudoFrame))
+        if (frame.isComplete()) {
+            loop(rolls, emptyFrame(), result + frame)
         } else {
             rolls.headOpt()
-                .map { head -> loop(rolls.tail(), pseudoFrame + head, result) }
-                .orElse { if (pseudoFrame.isEmpty()) result else result + Frame.from(pseudoFrame) }
+                .map { head -> loop(rolls.tail(), frame + head, result) }
+                .orElse { if (frame.isEmpty()) result else result + frame }
         }
 
-    return loop(this, emptyPseudoFrame(), mutableListOf())
+    return loop(this, emptyFrame(), mutableListOf())
 }
