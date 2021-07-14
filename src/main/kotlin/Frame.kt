@@ -4,8 +4,9 @@ typealias PinsKnockedDown = Int
 
 typealias Frames = List<Frame>
 
-data class Frame(val firstThrow: PinsKnockedDown? = null, val secondThrow: PinsKnockedDown? = null) {
+data class Frame(private val firstThrow: PinsKnockedDown? = null, private val secondThrow: PinsKnockedDown? = null) {
 
+    val pinsKnockedDownOnFirstThrow: Int = firstThrow.or(0) 
     val pinsKnockedDown: PinsKnockedDown = firstThrow.or(0) + secondThrow.or(0)
 
     operator fun plus(pinsKnockedDown: PinsKnockedDown): Frame =
