@@ -13,10 +13,10 @@ class Game {
     fun score(): Int =
         frames
             .take(TOTAL_NUMBER_OF_FRAMES)
-            .mapIndexed { currentIndex, frame ->
+            .mapIndexed { currentFrameIndex, frame ->
                 when {
-                    frame.isStrike() -> TOTAL_PINS + pinsKnockedDownOnNextTwoThrows(frames, currentIndex)
-                    frame.isSpare() -> TOTAL_PINS + frames.after(currentIndex).firstThrow()
+                    frame.isStrike() -> TOTAL_PINS + pinsKnockedDownOnNextTwoThrows(frames, currentFrameIndex)
+                    frame.isSpare() -> TOTAL_PINS + frames.after(currentFrameIndex).firstThrow()
                     else -> frame.pinsKnockedDown
                 }
             }.sum()
