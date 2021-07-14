@@ -8,16 +8,16 @@ class Game {
 
     private val frames: Frames = mutableListOf()
 
-    fun roll(p: PinsKnockedDown) {
+    fun roll(pinsKnockedDown: PinsKnockedDown) {
         when {
-            frames.isEmpty() -> frames.add(Frame(p))
+            frames.isEmpty() -> frames.add(Frame(pinsKnockedDown))
             else -> {
                 val last = frames.last()
                 when {
-                    last.isComplete() -> frames.add(Frame(p))
+                    last.isComplete() -> frames.add(Frame(pinsKnockedDown))
                     else -> {
                         frames.remove(last)
-                        frames.add(last + p)
+                        frames.add(last + pinsKnockedDown)
                     }
                 }
             }
