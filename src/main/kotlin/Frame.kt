@@ -1,9 +1,5 @@
 import Frame.Companion.emptyFrame
 
-typealias PinsKnockedDown = Int
-
-typealias Frames = List<Frame>
-
 data class Frame(private val firstThrow: PinsKnockedDown? = null, private val secondThrow: PinsKnockedDown? = null) {
 
     val pinsKnockedDownOnFirstThrow: Int = firstThrow.or(0) 
@@ -31,12 +27,11 @@ data class Frame(private val firstThrow: PinsKnockedDown? = null, private val se
     }
 }
 
+typealias Frames = List<Frame>
+
 fun List<PinsKnockedDown>.toFrames(): Frames {
-    fun loop(
-        rolls: List<PinsKnockedDown>,
-        frame: Frame,
-        result: Frames
-    ): Frames =
+
+    fun loop(rolls: List<PinsKnockedDown>, frame: Frame, result: Frames): Frames =
         if (frame.isComplete()) {
             loop(rolls, emptyFrame(), result + frame)
         } else {

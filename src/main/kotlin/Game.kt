@@ -1,6 +1,8 @@
 const val TOTAL_PINS = 10
 const val TOTAL_NUMBER_OF_FRAMES = 10
 
+typealias PinsKnockedDown = Int
+
 class Game {
 
     private var context: Context = Context()
