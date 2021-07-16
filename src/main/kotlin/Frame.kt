@@ -2,8 +2,8 @@ data class Frame(
     private val firstThrow: PinsKnockedDown? = null,
     private val secondThrow: PinsKnockedDown? = null
 ) {
-    val pinsKnockedDownOnFirstThrow: PinsKnockedDown get() = firstThrow.or(0)
-    val pinsKnockedDown: PinsKnockedDown get() = firstThrow.or(0) + secondThrow.or(0)
+    val pinsKnockedDownOnFirstThrow: PinsKnockedDown get() = firstThrow?:0
+    val pinsKnockedDown: PinsKnockedDown get() = (firstThrow?:0) + (secondThrow?:0)
 
     operator fun plus(pinsKnockedDown: PinsKnockedDown): Frame =
         if (firstThrow == null) {
