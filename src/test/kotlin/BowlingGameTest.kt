@@ -1,4 +1,4 @@
-import io.kotlintest.matchers.shouldBe
+import io.kotest.matchers.shouldBe
 import org.junit.Test
 
 class BowlingGameTest {
