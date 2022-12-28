@@ -1,7 +1,7 @@
 group = "com.eureka.katas"
 version = "1.0-SNAPSHOT"
 description = "bowling-game"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 plugins {
     java
@@ -39,6 +39,6 @@ tasks.test {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
